@@ -10,6 +10,8 @@ function getParents(element){
 function getCommonAncestor(el1, el2){
   if(!el2)
     return el1;
+  if(el1===document.body || el2===document.body)
+    return document.body;    
   var el1Parents = getParents(el1);
   var el2Parents = getParents(el2);
   var i = 0;
