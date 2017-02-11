@@ -1,6 +1,5 @@
 function getParents(element){
-  var parents = [element];
-  element = element.parentElement;
+  var parents = [];
   while(element){
     parents.unshift(element);
     element = element.parentElement;
