@@ -18,13 +18,11 @@ function getCommonAncestor(el1, el2){
 }
 
 function getHandlerTarget(elements, cb){
-  if(Array.isArray(elements) && elements.length){
-    if(elements.length === 1){
-      return elements[0];
-    }
+  if(Array.isArray(elements)){
     var ancestor = null;
     for(var i=0; i<elements.length; i++){
-      if(cb) cb(elements[i], i);
+      if(typeof cb === 'function')
+        cb(elements[i], i);
       ancestor = getCommonAncestor(elements[i], ancestor);
     }
     return ancestor;
@@ -32,19 +30,34 @@ function getHandlerTarget(elements, cb){
 }
 
 function attachHandler(elements){
+  var DATA_ATTRIBUTE_NAME = 'data-index';
+  function handler(ev){
+    var index = ev.target.getAttribute(DATA_ATTRIBUTE_NAME);
+    if(index)
+      alert(+index);
+  }
+  function cleanup(){
+    if(handlerTarget)
+      handlerTarget.removeEventListener('click', handler);
+    for(var i=0; i< elements.length;i++)
+      elements[i].removeAttribute(DATA_ATTRIBUTE_NAME);
+  }
   var handlerTarget = getHandlerTarget(elements, function(element, index){
-    element.setAttribute('data-index', index);
+    element.setAttribute(DATA_ATTRIBUTE_NAME, index);
   });
   if(handlerTarget){
-    handlerTarget.addEventListener('click', function(ev){
-      var index = ev.target.getAttribute('data-index')
-      if(index)
-        alert(+index);
-    })
+    handlerTarget.addEventListener('click', handler);
   }
+  else{
+    cleanup();
+  }
+  return cleanup;
 }
 
-/* sample of usage
+/* sample of usage :
+* add handler :
 * var elements = document.getElementsByTagName('p');
-* attachHandler([...elements]);
+* var cleanup = attachHandler([...elements]);
+* remove handler:
+* cleanup();
 */
