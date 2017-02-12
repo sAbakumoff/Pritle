@@ -1,0 +1,105 @@
+@startuml
+
+title SAP Catalog App - Class Diagram
+
+class PubSub {
+  Element element
+  handlersMap handlers
+  +constructor(element)
+  +publish(event, type)
+  +subscribe(event, handler)
+  +unsubscribe(type, handler)
+}
+class View {
+  Element element
+  PubSub pubSub
+  +constructor(element)
+  +on(event, handler)
+  +off(event, handler)
+  +trigger(event, message)
+}
+class AddItemView{
+  +render(model)
+}
+class ItemView{
+  +render(model)
+}
+class CatalogView{
+  +render(model)
+}
+class MenuView{
+  +render(model)
+}
+class Model{
+  PubSub pubSub
+  Store store
+  +constructor(store)
+  +on(event, handler)
+  +off(event, handler)
+  +trigger(event, message)
+}
+class AddItemModel{
+  +state()
+  +addItem(item)
+}
+class MenuModel{
+  +state()
+  +setActiveItem()
+}
+class CatalogModel{
+  +state()
+}
+class CatalogPresenter{
+  CatalogModel model
+  AddItemModel addAddItemModel
+  +constructor(store)
+  +render(element)
+}
+class Store{
+  +getMenu()
+  +getCatalog()
+  +addItem(item)
+  +addItemAllowed()
+}
+class MainPresenter{
+  Array presenters
+  MenuModel model
+  +constructor(store)
+  renderActivePage(element)
+  +render(element)
+}
+class TransactionsPresenter{
+  TransactionsModel model
+  +constructor(store)
+  +render(element)
+}
+class TransactionsModel{
+  +getState()
+}
+class TransactionsView{
+  +render(model)
+}
+CatalogPresenter "1" -down-* "1" MainPresenter: presenters
+TransactionsPresenter "1" -down-* "1" MainPresenter: presenters
+MenuModel "1" -down-* "1" MainPresenter: model
+MenuView "1" -down-* "1" MainPresenter
+Store "1" -down-* "1" CatalogPresenter
+CatalogModel "1" -down-* "1" CatalogPresenter: model
+AddItemModel "1" -down-* "1" CatalogPresenter: addAddItemModel
+CatalogView "1" -down-* "1" CatalogPresenter
+TransactionsView "1" -down-* "1" TransactionsPresenter
+TransactionsModel "1" -down-* "1" TransactionsPresenter: model
+PubSub "1" -down-* "1" Model: pubSub
+Store "1" -down-* "1" Model: store
+PubSub "1" -down-* "1" View: pubSub
+Model <|-down- AddItemModel
+Model <|-down- MenuModel
+Model <|-down- TransactionsModel
+Model <|-down- CatalogModel
+View <|-down- ItemView
+View <|-down- TransactionsView
+View <|-down- MenuView
+View <|-down- AddItemView
+View <|-down- CatalogView
+
+@enduml
