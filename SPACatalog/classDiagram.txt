@@ -3,9 +3,9 @@
 title SAP Catalog App - Class Diagram
 
 class PubSub {
-  Element element
-  handlersMap handlers
-  +constructor(element)
+  Object topics
+  Int uid
+  +constructor()
   +publish(event, type)
   +subscribe(event, handler)
   +unsubscribe(type, handler)
@@ -51,7 +51,6 @@ class CatalogModel{
 }
 class CatalogPresenter{
   CatalogModel model
-  AddItemModel addAddItemModel
   +constructor(store)
   +render(element)
 }
@@ -60,6 +59,7 @@ class Store{
   +getCatalog()
   +addItem(item)
   +addItemAllowed()
+  ++purchaseItemAllowed()
 }
 class MainPresenter{
   Array presenters
@@ -79,20 +79,49 @@ class TransactionsModel{
 class TransactionsView{
   +render(model)
 }
+
+class PurchaseItemView{
+  +render(model)
+}
+View <|-down- PurchaseItemView
+class PurchaseItemModel{
+  +state()
+  +purchase(item, transactionInfo)
+}
+Model <|-down- PurchaseItemModel
+
+class PurchasePresenter{
+  PurchaseItemModel model
+  +constructor(store)
+  +render(element)
+}
+class AddItemPresenter{
+  AddItemModel model
+  +constructor(store)
+  +render(element)
+}
+AddItemView "1" -down-* "1" AddItemPresenter
+AddItemModel "1" -down-* "1" AddItemPresenter: model
+
+
+
+PurchaseItemView "1" -down-* "1" PurchasePresenter
+PurchaseItemModel "1" -down-* "1" PurchasePresenter: model
+
+AddItemPresenter "1" -down-* "1" MainPresenter: presenters
 CatalogPresenter "1" -down-* "1" MainPresenter: presenters
 TransactionsPresenter "1" -down-* "1" MainPresenter: presenters
+PurchasePresenter "1" -down-* "1" MainPresenter: presenters
 MenuModel "1" -down-* "1" MainPresenter: model
 MenuView "1" -down-* "1" MainPresenter
-Store "1" -down-* "1" CatalogPresenter
 CatalogModel "1" -down-* "1" CatalogPresenter: model
-AddItemModel "1" -down-* "1" CatalogPresenter: addAddItemModel
 CatalogView "1" -down-* "1" CatalogPresenter
 TransactionsView "1" -down-* "1" TransactionsPresenter
 TransactionsModel "1" -down-* "1" TransactionsPresenter: model
 PubSub "1" -down-* "1" Model: pubSub
 Store "1" -down-* "1" Model: store
 PubSub "1" -down-* "1" View: pubSub
-Model <|-down- AddItemModel
+Model <|-up- AddItemModel
 Model <|-down- MenuModel
 Model <|-down- TransactionsModel
 Model <|-down- CatalogModel

@@ -26,7 +26,11 @@ class AddItemModel extends Model{
 
 class CatalogModel extends Model{
   state(){
-    return {items : this.store.getCatalog()}
+    return {
+      items : this.store.getCatalog(),
+      updateAllowed : this.store.addItemAllowed,
+      purchaseAllowed : this.store.purchaseItemAllowed
+    }
   }
 }
 

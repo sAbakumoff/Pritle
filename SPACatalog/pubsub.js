@@ -1,21 +1,45 @@
 class PubSub{
-  constructor(element){
-    this.element = element || document;
-    this.handlersMap = {};
+  constructor(){
+    this.topics = {};
+    this.subUid = -1;
   }
-  publish(type, message){
-    var event = new CustomEvent(type, {detail : message});
-    this.element.dispatchEvent(event);
+  subscribe(topic, func) {
+        if (!this.topics[topic]) {
+            this.topics[topic] = [];
+        }
+        var token = (++this.subUid).toString();
+        this.topics[topic].push({
+            token: token,
+            func: func
+        });
+        return token;
   }
-  subscribe(type, handler){
-    var eventHandler = function(ev){
-      handler(ev.detail);
-    }
-    this.handlersMap[handler] = eventHandler;
-    this.element.addEventListener(type, eventHandler);
+  publish(topic, args) {
+          if (!this.topics[topic]) {
+              return false;
+          }
+          setTimeout(()=> {
+              var subscribers = this.topics[topic],
+                  len = subscribers ? subscribers.length : 0;
+
+              while (len--) {
+                  subscribers[len].func(args);
+              }
+          }, 0);
+          return true;
+
   }
-  unsubscribe(type, handler){
-    delete this.handlersMap[handler];
-    this.element.removeEventListener(type, this.handlersMap[handler]);
-  }
+  unsubscribe (token) {
+          for (var m in this.topics) {
+              if (this.topics[m]) {
+                  for (var i = 0, j = this.topics[m].length; i < j; i++) {
+                      if (this.topics[m][i].token === token) {
+                          this.topics[m].splice(i, 1);
+                          return token;
+                      }
+                  }
+              }
+          }
+          return false;
+      };
 }
