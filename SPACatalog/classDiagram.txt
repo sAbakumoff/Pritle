@@ -18,6 +18,13 @@ class View {
   +off(event, handler)
   +trigger(event, message)
 }
+class Presenter {
+  PubSub pubSub
+  +constructor(element)
+  +on(event, handler)
+  +off(event, handler)
+  +trigger(event, message)
+}
 class AddItemView{
   +render(model)
 }
@@ -130,5 +137,12 @@ View <|-down- TransactionsView
 View <|-down- MenuView
 View <|-down- AddItemView
 View <|-down- CatalogView
+
+Presenter <|-down- MainPresenter
+Presenter <|-down- TransactionsPresenter
+Presenter <|-down- CatalogPresenter
+Presenter <|-down- AddItemPresenter
+Presenter <|-down- PurchasePresenter
+PubSub "1" -down-* "1" Presenter: pubSub
 
 @enduml
